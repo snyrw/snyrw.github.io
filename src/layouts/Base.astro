@@ -1,0 +1,78 @@
+---
+import '@fontsource-variable/source-serif-4/opsz.css';
+import '@fontsource-variable/source-serif-4/opsz-italic.css';
+import '../styles/global.css';
+import { site } from '../site';
+import { url } from '../lib/util';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title, description = site.description } = Astro.props;
+const pageTitle = site.name;
+const path = Astro.url.pathname;
+const canonical = new URL(path, Astro.site);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href={url('/favicon.svg')} type="image/svg+xml" />
+    <link rel="alternate" type="application/rss+xml" title={site.name} href={url('/rss.xml')} />
+    <meta property="og:title" content={title ?? site.name} />
+    <meta property="og:description" content={description} />
+    <meta name="color-scheme" content="light dark" />
+    <script is:inline>
+      try {
+        const theme = localStorage.getItem('theme');
+        if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme;
+      } catch {}
+    </script>
+  </head>
+  <body>
+    <header>
+      <a href={url('/')} class="name">{site.name}</a>
+      <nav>
+        <a href={url('/writing/')} aria-current={path.startsWith(url('/writing')) ? 'page' : undefined}>writing</a>
+        <a href={url('/notes/')} aria-current={path.startsWith(url('/notes')) ? 'page' : undefined}>notes</a>
+        <button type="button" class="theme-toggle" hidden></button>
+      </nav>
+    </header>
+    <script is:inline>
+      (() => {
+        const root = document.documentElement;
+        const button = document.querySelector('.theme-toggle');
+        const system = matchMedia('(prefers-color-scheme: dark)');
+        const current = () => root.dataset.theme || (system.matches ? 'dark' : 'light');
+        const label = () => {
+          const next = current() === 'dark' ? 'light' : 'dark';
+          button.textContent = next;
+          button.setAttribute('aria-label', `Switch to ${next} mode`);
+        };
+        button.addEventListener('click', () => {
+          const next = current() === 'dark' ? 'light' : 'dark';
+          root.dataset.theme = next;
+          try { localStorage.setItem('theme', next); } catch {}
+          label();
+        });
+        system.addEventListener('change', label);
+        label();
+        button.hidden = false;
+      })();
+    </script>
+    <main>
+      <slot />
+    </main>
+    <footer>
+      <span>{new Date().getFullYear()}</span>
+      <a href={url('/rss.xml')}>rss</a>
+    </footer>
+  </body>
+</html>

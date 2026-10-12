@@ -1,0 +1,18 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { url, isoDate } from '../lib/util';
+
+interface Props {
+  posts: CollectionEntry<'writing'>[];
+}
+const { posts } = Astro.props;
+---
+
+<ul class="posts">
+  {posts.map((post) => (
+    <li>
+      <time datetime={isoDate(post.data.date)}>{isoDate(post.data.date)}</time>
+      <a href={url(`/writing/${post.id}/`)}>{post.data.title}</a>
+    </li>
+  ))}
+</ul>

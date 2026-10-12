@@ -1,0 +1,31 @@
+---
+import Base from '../layouts/Base.astro';
+import PostList from '../components/PostList.astro';
+import { site } from '../site';
+import { getPosts, url } from '../lib/util';
+
+const posts = await getPosts();
+const recent = posts.slice(0, 8);
+---
+
+<Base>
+  <div class="intro">
+    <p>
+      cs alum @ western washington university, studied abroad @ seikei university. interested in technical
+      ai safety. 10(ish) years of japanese learning.
+    </p>
+    <p>
+      this site mostly contains blog posts that i wanted to make public
+      but didn't feel were polished enough for fuller write-ups.
+    </p>
+    <p class="links">
+      {site.links.map((link) => <a href={link.href}>{link.label}</a>)}
+    </p>
+  </div>
+
+  <h2 class="section">Writing</h2>
+  <PostList posts={recent} />
+  {posts.length > recent.length && (
+    <p class="more"><a href={url('/writing/')}>Everything else</a></p>
+  )}
+</Base>
