@@ -4,6 +4,8 @@ date: 2026-10-12
 description: An attempt at extending SDF to CoT controllability.
 ---
 
+[Code 💻](https://github.com/snyrw/teaching_to_reward_hack)
+
 (This is the second part of a two-part series, take a look at the first part [here](https://snyrw.github.io/writing/sdf-1/) since this post assumes you're familiar with stuff touched on there)
 
 *[Epistemic status: Results are messy and confounded with light analysis. Treat mostly as exploratory. Claude Sonnet and Opus 5.5 wrote and edited some portions of this post as well.]*
