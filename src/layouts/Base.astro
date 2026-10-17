@@ -70,6 +70,37 @@ const canonical = new URL(path, Astro.site);
     <main>
       <slot />
     </main>
+    <script>
+      // Click a figure image to view it larger in a modal <dialog>.
+      // Esc, clicking anywhere, or the browser's close gesture dismisses it.
+      const images = document.querySelectorAll<HTMLImageElement>('.prose figure img');
+      if (images.length) {
+        const dialog = document.createElement('dialog');
+        dialog.className = 'lightbox';
+        dialog.setAttribute('aria-label', 'Enlarged image');
+        const big = document.createElement('img');
+        dialog.append(big);
+        document.body.append(dialog);
+        dialog.addEventListener('click', () => dialog.close());
+
+        for (const img of images) {
+          img.tabIndex = 0;
+          img.setAttribute('role', 'button');
+          const open = () => {
+            big.src = img.currentSrc || img.src;
+            big.alt = img.alt;
+            dialog.showModal();
+          };
+          img.addEventListener('click', open);
+          img.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              open();
+            }
+          });
+        }
+      }
+    </script>
     <footer>
       <span>{new Date().getFullYear()}</span>
       <a href={url('/rss.xml')}>rss</a>

@@ -281,9 +281,9 @@ h1.page-title:not(:has(+ .meta)) {
   margin-top: 1.1em;
 }
 
-/* Tables, figures and code get more room, equal on both sides. */
-.prose > * + :is(table, figure, pre),
-.prose > :is(table, figure, pre) + * {
+/* Tables, figures, code and dropdowns get more room, equal on both sides. */
+.prose > * + :is(table, figure, pre, details),
+.prose > :is(table, figure, pre, details) + * {
   margin-top: 2.5rem;
 }
 
@@ -351,6 +351,71 @@ h1.page-title:not(:has(+ .meta)) {
   }
 }
 
+/* Click-to-enlarge: a faint expand icon on hover, a shaded modal on click. */
+
+.prose figure {
+  position: relative;
+}
+
+.prose figure img {
+  cursor: zoom-in;
+}
+
+.prose figure:has(img)::after {
+  content: '';
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 0.3rem;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 4h5v5M9 20H4v-5M20 4l-6 6M4 20l6-6'/%3E%3C/svg%3E")
+      center / 1rem no-repeat,
+    rgb(0 0 0 / 0.6);
+  box-shadow: 0 0 0 1px rgb(255 255 255 / 0.25);
+  opacity: 0;
+  transition: opacity 0.15s;
+  pointer-events: none;
+}
+
+.prose figure:has(img):hover::after,
+.prose figure:has(img:focus-visible)::after {
+  opacity: 1;
+}
+
+.lightbox {
+  max-width: none;
+  max-height: none;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: zoom-out;
+}
+
+.lightbox[open] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lightbox::backdrop {
+  background: rgb(0 0 0 / 0.82);
+}
+
+.lightbox img {
+  max-width: min(94vw, 90rem);
+  max-height: 94vh;
+  object-fit: contain;
+  background: var(--bg);
+}
+
+body:has(.lightbox[open]) {
+  overflow: hidden;
+}
+
 .prose figcaption {
   margin-top: 0.75rem;
   font-size: 0.875rem;
@@ -397,6 +462,61 @@ h1.page-title:not(:has(+ .meta)) {
   padding-bottom: 0;
 }
 
+/* Dropdowns: <details><summary>Title</summary> … </details> in any post. */
+
+.prose details {
+  border-block: 1px solid var(--faint);
+}
+
+.prose summary {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6em;
+  padding: 0.75rem 0;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.prose summary::-webkit-details-marker {
+  display: none;
+}
+
+.prose summary::before {
+  content: '+';
+  flex: none;
+  width: 0.8em;
+  color: var(--muted);
+  font-weight: 400;
+  font-family: var(--mono);
+  text-align: center;
+}
+
+.prose details[open] > summary::before {
+  content: '\2212';
+}
+
+.prose summary:hover::before {
+  color: var(--fg);
+}
+
+.prose details > :not(summary) {
+  margin-block: 0;
+}
+
+.prose details > summary + * {
+  margin-top: 0.25rem;
+}
+
+.prose details > * + * {
+  margin-top: 1.1em;
+}
+
+.prose details > :last-child {
+  margin-bottom: 1.25rem;
+}
+
 /* Code */
 
 code,
@@ -418,6 +538,10 @@ pre {
   line-height: 1.5;
   border-radius: 3px;
   tab-size: 2;
+  /* Wrap long lines instead of scrolling; the code blocks here are mostly
+     prose and JSON strings, which are unreadable when scrolled sideways. */
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
 }
 
 /* Footnotes */
